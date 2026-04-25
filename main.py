@@ -1105,34 +1105,29 @@ async def initialize():
 
 
 if __name__ == "__main__":
-    from pathlib import Path
-    import asyncio
-    import time
-
     Path("assets").mkdir(parents=True, exist_ok=True)
     Path("default_thumbs").mkdir(parents=True, exist_ok=True)
 
     try:
         LOGGER(__name__).info("Bot Starting with Render Support...")
 
-        # 🔥 Start Flask (Render ke liye)
+        # Flask start
         threading.Thread(target=run_web, daemon=True).start()
 
-        # 🔥 Initialize bot
+        # init
         asyncio.get_event_loop().run_until_complete(initialize())
 
+        # bot start
         user.start()
         bot.start()
 
-        LOGGER(__name__).info("✅ Bot is LIVE on Render!")
+        LOGGER(__name__).info("✅ Bot LIVE + Listening...")
 
-        # 🔥 Bot ko band hone se bachane ke liye loop
-        while True:
-            time.sleep(10)
+        # 🔥 BEST WAY (Pyrogram)
+        from pyrogram import idle
+        idle()
 
     except KeyboardInterrupt:
         pass
     except Exception as err:
         LOGGER(__name__).error(err)
-    finally:
-        LOGGER(__name__).info("Bot Stopped")
