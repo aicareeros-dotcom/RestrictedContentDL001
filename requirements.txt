@@ -6,3 +6,4 @@ psutil
 pillow
 requests
 waifu-python
+flask
