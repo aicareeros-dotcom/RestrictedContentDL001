@@ -1,6 +1,7 @@
 # Copyright (C) @TheSmartBisnu
 # Channel: https://t.me/itsSmartDev
-
+from flask import Flask
+import threading
 import os
 import io
 from io import BytesIO
@@ -65,9 +66,28 @@ from config import PyroConf
 from logger import LOGGER
 from cmd_list import COMMANDS
 
+# 👇 YAHAN ADD KARNA HAI (IMPORTANT)
+
+from flask import Flask
+import threading
+import os
+
+# ================== RENDER KEEP ALIVE ==================
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is Live!", 200
+
+def run_web():
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
+# ======================================================
+
+
 START_TIME = time()
 
-# Initialize the bot client
+# 👇 Iske baad tera normal bot code
 bot = Client(
     "media_bot",
     api_id=PyroConf.API_ID,
@@ -1085,14 +1105,31 @@ async def initialize():
 
 
 if __name__ == "__main__":
-    # Create folders if they don't exist
+    from pathlib import Path
+    import asyncio
+    import time
+
     Path("assets").mkdir(parents=True, exist_ok=True)
     Path("default_thumbs").mkdir(parents=True, exist_ok=True)
+
     try:
-        LOGGER(__name__).info("Bot Started!")
+        LOGGER(__name__).info("Bot Starting with Render Support...")
+
+        # 🔥 Start Flask (Render ke liye)
+        threading.Thread(target=run_web, daemon=True).start()
+
+        # 🔥 Initialize bot
         asyncio.get_event_loop().run_until_complete(initialize())
+
         user.start()
-        bot.run()
+        bot.start()
+
+        LOGGER(__name__).info("✅ Bot is LIVE on Render!")
+
+        # 🔥 Bot ko band hone se bachane ke liye loop
+        while True:
+            time.sleep(10)
+
     except KeyboardInterrupt:
         pass
     except Exception as err:
